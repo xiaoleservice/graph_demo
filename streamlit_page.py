@@ -198,10 +198,60 @@ def speed_graph(value_max, value_min):
             sec_res = int(secs % 60)
             res_str = '{}\'{}\'\''.format(min_res, sec_res)
             result.append(res_str)
+    print(result_num)
+    print(result)
     return result_num, result
 
 
 def speed_graph2(value_max, value_min):
+
+    axis_max = value_max
+    axis_min = value_min
+
+    n = 0
+    # while axis_max % 30 != 0:
+    #     n = n + 1
+    #     axis_max = axis_max + 1
+    print('坐标轴最大值为：{} + {} = {}'.format(value_max, n, axis_max))
+
+    m = 0
+    while axis_min % 30 != 0:
+        m = m + 1
+        axis_min = axis_min - 1
+        if axis_min <= 0:
+            axis_min = 0
+            m = value_min
+            break
+    print('坐标轴最小值为：{} - {} = {}'.format(value_min, m, axis_min))
+    axis_range = axis_max - axis_min
+    result = []
+    result_num = []
+
+    if axis_min != 0:
+        axis_each = float(axis_range / 3)
+        while floor(axis_each) % 30 != 0:
+            axis_each = floor(axis_each) + 1
+        for i in range(4):
+            secs = axis_min + i * axis_each
+            result_num.append(secs)
+            min_res = floor(secs / 60)
+            sec_res = int(secs % 60)
+            res_str = '{}:{}'.format(min_res, sec_res)
+            result.append(res_str)
+    else:
+        axis_each = axis_range / 4
+        print(axis_each)
+        for i in range(5):
+            secs = axis_min + i * axis_each
+            result_num.append(secs)
+            min_res = floor(secs / 60)
+            sec_res = int(secs % 60)
+            res_str = '{}:{}'.format(min_res, sec_res)
+            result.append(res_str)
+    return result_num, result
+
+
+def speed_graph3(value_max, value_min):
 
     axis_max = value_max
     axis_min = value_min
@@ -223,30 +273,33 @@ def speed_graph2(value_max, value_min):
     print('坐标轴最小值为：{} - {} = {}'.format(value_min, m, axis_min))
     axis_range = axis_max - axis_min
     result = []
+    result_num = []
 
     if axis_min != 0:
-        axis_each = float(axis_range / 4)
-        for i in range(5):
+        axis_each = float(axis_range / 3)
+        for i in range(4):
             secs = axis_min + i * axis_each
+            result_num.append(secs)
             min_res = floor(secs / 60)
             sec_res = int(secs % 60)
             res_str = '{}:{}'.format(min_res, sec_res)
             result.append(res_str)
     else:
-        axis_each = axis_range / 5
+        axis_each = axis_range / 4
         print(axis_each)
-        for i in range(6):
+        for i in range(5):
             secs = axis_min + i * axis_each
+            result_num.append(secs)
             min_res = floor(secs / 60)
             sec_res = int(secs % 60)
             res_str = '{}:{}'.format(min_res, sec_res)
             result.append(res_str)
-    return result
+    return result_num, result
 
 
 def draw_plot_speed(value_x, value_y, y_ticks, type=1, color='#FF0000'):
-    series_count = 4
-    plt.figure(1, figsize=(8, 5))
+    series_count = 2
+    plt.figure(1, figsize=(8, 2.5))
     y_ticks_labels = []
     for i in range(len(y_ticks)):
         secs = y_ticks[i]
@@ -274,17 +327,17 @@ def draw_plot_speed(value_x, value_y, y_ticks, type=1, color='#FF0000'):
             fill_aera_y = value_y[i].tolist()
             fill_aera_y.insert(0, y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]))
             fill_aera_y.append(y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]))
-            plt.fill(fill_aera_x, fill_aera_y, color='#E35A5A')
+            plt.fill(fill_aera_x, fill_aera_y, color=color)
         else:
             plt.fill([0, 10, 10, 0], [y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]) + 10, y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]), value_y[i][0], value_y[i][0]], color='#E35A5A')
         ax.invert_yaxis()
-        plt.plot(value_x[i], value_y[i], linewidth=2, color='#E35A5A')   # 折线
+        plt.plot(value_x[i], value_y[i], linewidth=2, color=color)   # 折线
     st.pyplot(plt)
 
 
 def draw_plot_1(value_x, value_y, y_ticks):
-    series_count = 4
-    plt.figure(1, figsize=(8, 5))
+    series_count = 2
+    plt.figure(1, figsize=(8, 2.5))
     for i in range(series_count):
         plt.subplot(int(series_count / 2), 2, i + 1)
         plt.yticks(y_ticks)
@@ -329,8 +382,8 @@ def draw_plot_1(value_x, value_y, y_ticks):
 
 # 起点一定为0
 def draw_plot_2(value_x, value_y, y_ticks, type=1, color='#61CE86'):
-    series_count = 4
-    plt.figure(1, figsize=(8, 5))
+    series_count = 2
+    plt.figure(1, figsize=(8, 2.5))
     for i in range(series_count):
         plt.subplot(int(series_count / 2), 2, i + 1)
         plt.yticks(y_ticks)
@@ -361,8 +414,8 @@ def draw_plot_2(value_x, value_y, y_ticks, type=1, color='#61CE86'):
 
 
 def draw_plot_3(value_x, value_y, y_ticks):
-    series_count = 4
-    plt.figure(1, figsize=(8, 5))
+    series_count = 2
+    plt.figure(1, figsize=(8, 2.5))
     for i in range(series_count):
         plt.subplot(int(series_count / 2), 2, i + 1)
         plt.yticks(y_ticks)
@@ -386,7 +439,6 @@ def draw_plot_3(value_x, value_y, y_ticks):
         plt.plot(value_x[i], value_y[i], linewidth=2, color='#5FCEFF')   # 折线
         plt.axhline(y=c, color="gray", ls='--', lw=2, alpha=0.5)
     st.pyplot(plt)
-
 
 
 def generate_bar_data(max_val, min_val):
@@ -484,7 +536,17 @@ def for_speed_graph_1(type=1, color='#FF0000'):
         elif type == 3:
             demo_value_x, demo_value_y = generate_bar_data(max_value, min_value)
     with st.spinner('绘制中...'):
-        draw_plot_speed(demo_value_x, demo_value_y, result_list, type=1, color='#FF0000')
+        draw_plot_speed(demo_value_x, demo_value_y, result_list, type=1, color='#2AC288')
+    result_list_2 = speed_graph2(max_value, min_value)[0]
+    str_val = '##### 方案二坐标轴计算结果：' + str(result_list_2)
+    st.markdown(str_val)
+    with st.spinner('绘制中...'):
+        draw_plot_speed(demo_value_x, demo_value_y, result_list_2, type=1, color='#2AC288')
+    result_list_3 = speed_graph3(max_value, min_value)[0]
+    str_val = '##### 方案三坐标轴计算结果：' + str(result_list_3)
+    st.markdown(str_val)
+    with st.spinner('绘制中...'):
+        draw_plot_speed(demo_value_x, demo_value_y, result_list_3, type=1, color='#2AC288')
 
 
 
