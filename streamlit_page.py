@@ -483,8 +483,8 @@ def generate_data(max_val, min_val):
     return value_x_result, value_y_result
 
 # graph_type   1-折线  2-散点   3-段
-# limtype    1-心率等大于等于0
-def draw_plotly_graph(x_values, y_values, y_ticks, limtype=1, graph_type=1):
+# limtype    1-心率等大于等于0   2-海拔等可小于0
+def draw_plotly_graph(x_values, y_values, y_ticks, limtype=1, graph_type=1, line_color='#E35A5A', fillcolor='#E36C6C'):
     average_val = np.mean(y_values)
     if limtype == 1:
         if min(y_values) != 0:
@@ -492,26 +492,45 @@ def draw_plotly_graph(x_values, y_values, y_ticks, limtype=1, graph_type=1):
                         y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
         else:
             yaxis_range = [y_ticks[0], y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
-    if limtype == 9:
+    elif limtype == 2:
+        yaxis_range = [y_ticks[0] - 0.5 * (y_ticks[1] - y_ticks[0]), y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
+        low_val_num = yaxis_range[0]
+        go_down = go.Scatter(
+            x=x_values,
+            y=[low_val_num] * len(x_values),
+            line=dict(dash='dash', color='#000000', width=0),
+            opacity=0.1,
+
+            fillcolor=fillcolor,
+            fill='tozeroy',
+            hoverinfo='none',
+            showlegend=False
+        )
+    elif limtype == 9:
         yaxis_range = [0, 230]
-    fig = go.Figure([go.Scatter(
-        x=x_values,
-        y=y_values,
-        mode='lines',
-        hoverinfo='y',
-        fillcolor='#E36C6C',
-        fill='tozeroy',
-        line=dict(shape='linear', color='#E35A5A'),  # spline,hv,vh,linear,hvh,vhv
-        showlegend=False,
-        hoveron='points'
-    ), go.Scatter(
+    go_average = go.Scatter(
         x=x_values,
         y=[average_val] * len(x_values),
         line=dict(dash='dash', color='#000000'),
         opacity=0.3,
         hoverinfo='none',
         showlegend=False
-    )])
+        )
+    go_val = go.Scatter(
+        x=x_values,
+        y=y_values,
+        mode='lines',
+        hoverinfo='y',
+        fillcolor=fillcolor,
+        fill='tozeroy',
+        line=dict(shape='linear', color=line_color),  # spline,hv,vh,linear,hvh,vhv
+        showlegend=False,
+        hoveron='points'
+    )
+    if limtype == 2 and low_val_num < 0:
+        fig = go.Figure([go_val, go_down, go_average])
+    else:
+        fig = go.Figure([go_val, go_average])
     fig.update_layout(
         yaxis=dict(
             tickmode='array',
@@ -577,7 +596,11 @@ def latitude_graph():
         demo_value_x, demo_value_y = generate_data(max_val, min_val)
     with st.spinner('绘制中...'):
         draw_plot_3(demo_value_x, demo_value_y, result_list)
-
+        st.markdown('### 可交互视图（试验）- 0625')
+        st.markdown('#### 方案一（' + str(result_list)[1:-1] + '）')
+        fig1 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], result_list, limtype=2, line_color='#30C1FF', fillcolor='#2FC8E4')
+        st.plotly_chart(fig1)
+        st.success('绘制完成')
 
 def start_by_zero_graph(type=1, color='#61CE86'):
     min_val = value_selection[0]
