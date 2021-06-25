@@ -279,7 +279,7 @@ def draw_plot_2(value_x, value_y, y_ticks, type=1, color='#61CE86'):
     series_count = 4
     plt.figure(1, figsize=(8, 5))
     for i in range(series_count):
-        plt.subplot(series_count / 2, 2, i + 1)
+        plt.subplot(int(series_count / 2), 2, i + 1)
         plt.yticks(y_ticks)
         plt.xticks([0, 3, 6, 9], ['0(min)', '3', '6', '9'])
         c = np.mean(value_y[i])
@@ -291,12 +291,15 @@ def draw_plot_2(value_x, value_y, y_ticks, type=1, color='#61CE86'):
         fill_aera_x = value_x[i].tolist()
         fill_aera_x.insert(0, 0)
         fill_aera_x.append(10)
-        fill_aera_y = value_y[i].tolist()
-        fill_aera_y.insert(0, 0)
-        fill_aera_y.append(0)
-        if type == 1:
+        if not isinstance(value_y[i], list) and type == 1:
+            fill_aera_y = value_y[i].tolist()
+            fill_aera_y.insert(0, 0)
+            fill_aera_y.append(0)
             plt.fill(fill_aera_x, fill_aera_y, color=color)
-            plt.plot(value_x[i], value_y[i], linewidth=2, color=color)   # 折线
+            plt.plot(value_x[i], value_y[i], linewidth=2, color=color)  # 折线
+        elif type == 1:
+            plt.fill([0, 10, 10, 0], [value_y[i][0], value_y[i][0], 0, 0], color=color)
+            plt.plot(value_x[i], value_y[i], linewidth=2, color=color)
         elif type == 2:
             plt.scatter(value_x[i], value_y[i], s=15)
         elif type == 3:
