@@ -276,8 +276,8 @@ def speed_graph3(value_max, value_min):
     result_num = []
 
     if axis_min != 0:
-        axis_each = float(axis_range / 3)
-        for i in range(4):
+        axis_each = float(axis_range / 4)
+        for i in range(5):
             secs = axis_min + i * axis_each
             result_num.append(secs)
             min_res = floor(secs / 60)
@@ -285,9 +285,9 @@ def speed_graph3(value_max, value_min):
             res_str = '{}:{}'.format(min_res, sec_res)
             result.append(res_str)
     else:
-        axis_each = axis_range / 4
+        axis_each = axis_range / 5
         print(axis_each)
-        for i in range(5):
+        for i in range(6):
             secs = axis_min + i * axis_each
             result_num.append(secs)
             min_res = floor(secs / 60)
@@ -299,7 +299,10 @@ def speed_graph3(value_max, value_min):
 
 def draw_plot_speed(value_x, value_y, y_ticks, type=1, color='#FF0000'):
     series_count = 2
-    plt.figure(1, figsize=(8, 2.5))
+    if type == 1:
+        plt.figure(1, figsize=(8, 2.5))
+    elif type == 3:
+        plt.figure(1, figsize=(8, 2.5))
     y_ticks_labels = []
     for i in range(len(y_ticks)):
         secs = y_ticks[i]
@@ -307,7 +310,10 @@ def draw_plot_speed(value_x, value_y, y_ticks, type=1, color='#FF0000'):
         seconds_val = int(secs % 60)
         y_ticks_labels.append('{}\'{}\"'.format(minutes_val, seconds_val))
     for i in range(series_count):
-        plt.subplot(int(series_count / 2), 2, i + 1)
+        if type == 1:
+            plt.subplot(int(series_count / 2), 2, i + 1)
+        elif type == 3:
+            plt.subplot(int(series_count / 2), 2, i + 1, facecolor=color)
         plt.yticks(y_ticks, y_ticks_labels)
         plt.xticks([0, 3, 6, 9], ['0(min)', '3', '6', '9'])
         c = np.mean(value_y[i])
@@ -323,15 +329,18 @@ def draw_plot_speed(value_x, value_y, y_ticks, type=1, color='#FF0000'):
         fill_aera_x = value_x[i].tolist()
         fill_aera_x.insert(0, 0)
         fill_aera_x.append(10)
-        if not isinstance(value_y[i], list):
-            fill_aera_y = value_y[i].tolist()
-            fill_aera_y.insert(0, y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]))
-            fill_aera_y.append(y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]))
-            plt.fill(fill_aera_x, fill_aera_y, color=color)
-        else:
-            plt.fill([0, 10, 10, 0], [y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]) + 10, y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]), value_y[i][0], value_y[i][0]], color='#E35A5A')
         ax.invert_yaxis()
-        plt.plot(value_x[i], value_y[i], linewidth=2, color=color)   # 折线
+        if type == 1:
+            if not isinstance(value_y[i], list):
+                fill_aera_y = value_y[i].tolist()
+                fill_aera_y.insert(0, y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]))
+                fill_aera_y.append(y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]))
+                plt.fill(fill_aera_x, fill_aera_y, color=color)
+            else:
+                plt.fill([0, 10, 10, 0], [y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]) + 10, y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]), value_y[i][0], value_y[i][0]], color='#E35A5A')
+            plt.plot(value_x[i], value_y[i], linewidth=2, color=color)  # 折线
+        elif type == 3:
+            plt.bar(value_x[i], value_y[i], 1, color='w')
     st.pyplot(plt)
 
 
@@ -536,17 +545,17 @@ def for_speed_graph_1(type=1, color='#FF0000'):
         elif type == 3:
             demo_value_x, demo_value_y = generate_bar_data(max_value, min_value)
     with st.spinner('绘制中...'):
-        draw_plot_speed(demo_value_x, demo_value_y, result_list, type=1, color='#2AC288')
+        draw_plot_speed(demo_value_x, demo_value_y, result_list, type=type, color='#2AC288')
     result_list_2 = speed_graph2(max_value, min_value)[0]
     str_val = '##### 方案二坐标轴计算结果：' + str(result_list_2)
     st.markdown(str_val)
     with st.spinner('绘制中...'):
-        draw_plot_speed(demo_value_x, demo_value_y, result_list_2, type=1, color='#2AC288')
+        draw_plot_speed(demo_value_x, demo_value_y, result_list_2, type=type, color='#2AC288')
     result_list_3 = speed_graph3(max_value, min_value)[0]
     str_val = '##### 方案三坐标轴计算结果：' + str(result_list_3)
     st.markdown(str_val)
     with st.spinner('绘制中...'):
-        draw_plot_speed(demo_value_x, demo_value_y, result_list_3, type=1, color='#2AC288')
+        draw_plot_speed(demo_value_x, demo_value_y, result_list_3, type=type, color='#2AC288')
 
 
 
@@ -625,16 +634,16 @@ elif selection == '步频':
     else:
         value_selection = st.slider('数值范围', min_value=0, max_value=300, value=(45, 135))
     start_by_zero_graph(2)
-elif selection == '配速（非游泳）':
+elif selection == '配速（非游泳）' or selection == '配速（游泳）':
     st.markdown(f'### 2. 选取数据范围')
     col1, col2 = st.beta_columns(2)
     speed_low = col1.text_input('输入最快配速：', '3:10')
     speed_high = col2.text_input('输入最慢配速：', '8:10')
     if st.button('计算并绘制'):
-        for_speed_graph_1()
-elif selection == 5:
-    # for_speed_graph_2()
-    pass
+        if selection == '配速（非游泳）':
+            for_speed_graph_1(1)
+        else:
+            for_speed_graph_1(3)
 elif selection == '划频（游泳）':
     st.markdown(f'### 2. 选取数据范围')
     if st.button('随机生成'):
