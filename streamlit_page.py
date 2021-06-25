@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import plotly.express as px
+import plotly.graph_objects as go
 
 
 def start_above_zero(value_max, value_min):
@@ -493,6 +494,59 @@ def heart_rate_graph():
         demo_value_x, demo_value_y = generate_data(max_val, min_val)
     with st.spinner('绘制中...'):
         draw_plot_1(demo_value_x, demo_value_y, result_list)
+        average_val = np.mean(demo_value_y[0])
+        st.markdown('### 可交互视图（试验）- 0625')
+        fig = go.Figure([go.Scatter(
+            x = demo_value_x[0],
+            y = demo_value_y[0],
+            mode='lines',
+            hoverinfo='y',
+            fillcolor='#E36C6C',
+            fill='tozeroy',
+            line=dict(shape='linear', color='#E35A5A'),
+            showlegend=False,
+            hoveron='points'
+        ), go.Scatter(
+            x = demo_value_x[0],
+            y = [average_val] * len(demo_value_x[0]),
+            line=dict(dash='dash', color='#A3A3A3'),
+            hoverinfo='none',
+            showlegend=False
+        )])
+        y_ticks = result_list
+        fig.update_layout(
+            yaxis = dict(
+                tickmode='array',
+                tickvals = result_list,
+                ticktext=result_list,
+                range=[result_list[0] - 0.5 * (y_ticks[1] - y_ticks[0]),
+                        y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])],
+                showgrid=True,
+                gridcolor='#CDCDCD',
+                gridwidth=0.1,
+                showline=False,
+                linecolor='#A3A3A3',
+                linewidth=2,
+                side='right'
+            ),
+            xaxis=dict(
+                tickmode='array',
+                tickvals=[0, 3, 6, 9],
+                ticktext=['0(分钟)', '3', '6', '9'],
+                range=[0, 10],
+                showgrid=False,
+                showline=False,
+                zeroline=False,
+                linecolor='#A3A3A3',
+                linewidth=2,
+            ),
+            dragmode=False,
+            height=400,
+            margin=dict(t=30, b=20)
+            # title='方案一'
+        )
+        st.plotly_chart(fig)
+        st.success('完成')
 
 
 def latitude_graph():
@@ -523,6 +577,7 @@ def start_by_zero_graph(type=1, color='#61CE86'):
             demo_value_x, demo_value_y = generate_bar_data(max_val, min_val)
     with st.spinner('绘制中...'):
         draw_plot_2(demo_value_x, demo_value_y, result_list, type, color)
+
 
 
 def for_speed_graph_1(type=1, color='#FF0000'):
