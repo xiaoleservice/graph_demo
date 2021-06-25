@@ -547,8 +547,8 @@ def heart_rate_graph():
     min_val = value_selection[0]
     max_val = value_selection[1]
     result_list = start_above_zero(max_val, min_val)
-    str_val = '##### 方案一坐标轴计算结果：' + str(result_list)
-    st.markdown(str_val)
+    # str_val = '##### 方案一坐标轴计算结果：' + str(result_list)
+    # st.markdown(str_val)
     with st.spinner('生成数据...'):
         time.sleep(0.5)
         demo_value_x, demo_value_y = generate_data(max_val, min_val)
