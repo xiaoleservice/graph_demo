@@ -649,10 +649,10 @@ elif selection == '划频（游泳）':
     if st.button('随机生成'):
         random_value = np.random.randint(0, 40, 2)
         random_value.sort()
-        value_selection = st.slider('数值范围', min_value=0, max_value=40,
+        value_selection = st.slider('数值范围', min_value=0, max_value=300,
                                     value=(int(random_value[0]), int(random_value[1])))
     else:
-        value_selection = st.slider('数值范围', min_value=0, max_value=40, value=(2, 17))
+        value_selection = st.slider('数值范围', min_value=0, max_value=300, value=(2, 17))
     start_by_zero_graph(3, '#1CC3DF')
 elif selection == 'Swolf（游泳）':
     st.markdown(f'### 2. 选取数据范围')
