@@ -155,41 +155,50 @@ def speed_graph(value_max, value_min):
     axis_min = value_min
 
     n = 0
-    while axis_max % temp != 0:
-        n = n + 1
-        axis_max = axis_max + 1
+    if temp != 0:
+        while axis_max % temp != 0:
+            n = n + 1
+            axis_max = axis_max + 1
+    else:
+        pass
     print('坐标轴最大值为：{} + {} = {}'.format(value_max, n, axis_max))
 
     m = 0
-    while axis_min % temp != 0:
-        m = m + 1
-        axis_min = axis_min - 1
-        if axis_min <= 0:
-            axis_min = 0
-            m = value_min
-            break
+    if temp != 0:
+        while axis_min % temp != 0:
+            m = m + 1
+            axis_min = axis_min - 1
+            if axis_min <= 0:
+                axis_min = 0
+                m = value_min
+                break
+    else:
+        pass
     print('坐标轴最小值为：{} - {} = {}'.format(value_min, m, axis_min))
     axis_range = axis_max - axis_min
+    result_num = []
     result = []
 
     if axis_min != 0:
-        axis_each = float(axis_range / 4)
-        for i in range(5):
+        axis_each = float(axis_range / 3)
+        for i in range(4):
             secs = axis_min + i * axis_each
+            result_num.append(secs)
             min_res = floor(secs / 60)
             sec_res = int(secs % 60)
-            res_str = '{}:{}'.format(min_res, sec_res)
+            res_str = '{}\'{}\'\''.format(min_res, sec_res)
             result.append(res_str)
     else:
-        axis_each = axis_range / 5
+        axis_each = axis_range / 4
         print(axis_each)
-        for i in range(6):
+        for i in range(5):
             secs = axis_min + i * axis_each
+            result_num.append(secs)
             min_res = floor(secs / 60)
             sec_res = int(secs % 60)
-            res_str = '{}:{}'.format(min_res, sec_res)
+            res_str = '{}\'{}\'\''.format(min_res, sec_res)
             result.append(res_str)
-    return result
+    return result_num, result
 
 
 def speed_graph2(value_max, value_min):
@@ -233,6 +242,44 @@ def speed_graph2(value_max, value_min):
             res_str = '{}:{}'.format(min_res, sec_res)
             result.append(res_str)
     return result
+
+
+def draw_plot_speed(value_x, value_y, y_ticks, type=1, color='#FF0000'):
+    series_count = 4
+    plt.figure(1, figsize=(8, 5))
+    y_ticks_labels = []
+    for i in range(len(y_ticks)):
+        secs = y_ticks[i]
+        minutes_val = floor(secs / 60)
+        seconds_val = int(secs % 60)
+        y_ticks_labels.append('{}\'{}\"'.format(minutes_val, seconds_val))
+    for i in range(series_count):
+        plt.subplot(int(series_count / 2), 2, i + 1)
+        plt.yticks(y_ticks, y_ticks_labels)
+        plt.xticks([0, 3, 6, 9], ['0(min)', '3', '6', '9'])
+        c = np.mean(value_y[i])
+        plt.axhline(y=c, color="gray", ls='--', lw=2, alpha=0.5)
+        ax = plt.gca()
+        ax.yaxis.tick_right()
+        if min(value_y[i]) != 0:
+            ax.set_ylim(y_ticks[0] - 0.5 * (y_ticks[1] - y_ticks[0]),
+                        y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]))
+        else:
+            ax.set_ylim(y_ticks[0], y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]))
+        ax.set_xlim(0, 10)
+        fill_aera_x = value_x[i].tolist()
+        fill_aera_x.insert(0, 0)
+        fill_aera_x.append(10)
+        if not isinstance(value_y[i], list):
+            fill_aera_y = value_y[i].tolist()
+            fill_aera_y.insert(0, y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]))
+            fill_aera_y.append(y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]))
+            plt.fill(fill_aera_x, fill_aera_y, color='#E35A5A')
+        else:
+            plt.fill([0, 10, 10, 0], [y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]) + 10, y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]), value_y[i][0], value_y[i][0]], color='#E35A5A')
+        ax.invert_yaxis()
+        plt.plot(value_x[i], value_y[i], linewidth=2, color='#E35A5A')   # 折线
+    st.pyplot(plt)
 
 
 def draw_plot_1(value_x, value_y, y_ticks):
@@ -417,32 +464,28 @@ def start_by_zero_graph(type=1, color='#61CE86'):
         draw_plot_2(demo_value_x, demo_value_y, result_list, type, color)
 
 
-def for_speed_graph_1():
+def for_speed_graph_1(type=1, color='#FF0000'):
     try:
-        min_val_min, min_val_sec = map(int, input('输入最快配速：').split(':'))
-        max_val_min, max_val_sec = map(int, input('输入最慢配速：').split(':'))
+        min_val_min, min_val_sec = map(int, speed_low.split(':'))
+        max_val_min, max_val_sec = map(int, speed_high.split(':'))
         min_value = min_val_min * 60 + min_val_sec
         max_value = max_val_min * 60 + max_val_sec
         if max_value < min_value:
             print('数值关系错误！')
     except Exception as e:
         print('数值输入错误！')
-    result_list = speed_graph(max_value, min_value)
-    print(result_list)
+    result_list = speed_graph(max_value, min_value)[0]
+    str_val = '##### 方案一坐标轴计算结果：' + str(result_list)
+    st.markdown(str_val)
+    with st.spinner('生成数据...'):
+        time.sleep(0.5)
+        if type == 1:
+            demo_value_x, demo_value_y = generate_data(max_value, min_value)
+        elif type == 3:
+            demo_value_x, demo_value_y = generate_bar_data(max_value, min_value)
+    with st.spinner('绘制中...'):
+        draw_plot_speed(demo_value_x, demo_value_y, result_list, type=1, color='#FF0000')
 
-
-def for_speed_graph_2():
-    try:
-        min_val_min, min_val_sec = map(int, input('输入最快配速：').split(':'))
-        max_val_min, max_val_sec = map(int, input('输入最慢配速：').split(':'))
-        min_value = min_val_min * 60 + min_val_sec
-        max_value = max_val_min * 60 + max_val_sec
-        if max_value < min_value:
-            print('数值关系错误！')
-    except Exception as e:
-        print('数值输入错误！')
-    result_list = speed_graph2(max_value, min_value)
-    print(result_list)
 
 
 st.set_page_config(page_title='图表绘制模拟')
@@ -520,10 +563,16 @@ elif selection == '步频':
     else:
         value_selection = st.slider('数值范围', min_value=0, max_value=300, value=(45, 135))
     start_by_zero_graph(2)
-elif selection == 4:
-    for_speed_graph_1()
+elif selection == '配速（非游泳）':
+    st.markdown(f'### 2. 选取数据范围')
+    col1, col2 = st.beta_columns(2)
+    speed_low = col1.text_input('输入最快配速：', '3:10')
+    speed_high = col2.text_input('输入最慢配速：', '8:10')
+    if st.button('计算并绘制'):
+        for_speed_graph_1()
 elif selection == 5:
-    for_speed_graph_2()
+    # for_speed_graph_2()
+    pass
 elif selection == '划频（游泳）':
     st.markdown(f'### 2. 选取数据范围')
     if st.button('随机生成'):
