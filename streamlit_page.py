@@ -482,8 +482,9 @@ def generate_data(max_val, min_val):
         value_y_result.append(demo_value_y)
     return value_x_result, value_y_result
 
-
-def draw_plotly_graph(x_values, y_values, y_ticks, limtype=1):
+# graph_type   1-折线  2-散点   3-段
+# limtype    1-心率等大于等于0
+def draw_plotly_graph(x_values, y_values, y_ticks, limtype=1, graph_type=1):
     average_val = np.mean(y_values)
     if limtype == 1:
         if min(y_values) != 0:
@@ -491,6 +492,8 @@ def draw_plotly_graph(x_values, y_values, y_ticks, limtype=1):
                         y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
         else:
             yaxis_range = [y_ticks[0], y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
+    if limtype == 9:
+        yaxis_range = [0, 230]
     fig = go.Figure([go.Scatter(
         x=x_values,
         y=y_values,
@@ -550,10 +553,15 @@ def heart_rate_graph():
         time.sleep(0.5)
         demo_value_x, demo_value_y = generate_data(max_val, min_val)
     with st.spinner('绘制中...'):
-        draw_plot_1(demo_value_x, demo_value_y, result_list)
+        # draw_plot_1(demo_value_x, demo_value_y, result_list)
         st.markdown('### 可交互视图（试验）- 0625')
+        st.markdown('#### 方案一（' + str(result_list)[1:-1] + '）')
         fig1 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], result_list)
+        mifit_case1 = [40, 80, 120, 160, 200]
+        fig2 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], mifit_case1, 9, 1)
         st.plotly_chart(fig1)
+        st.markdown('#### 方案二（Zepp）（' + str(mifit_case1)[1:-1] + '）')
+        st.plotly_chart(fig2)
         st.success('绘制完成')
 
 
