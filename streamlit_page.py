@@ -483,6 +483,63 @@ def generate_data(max_val, min_val):
     return value_x_result, value_y_result
 
 
+def draw_plotly_graph(x_values, y_values, y_ticks, limtype=1):
+    average_val = np.mean(y_values)
+    if limtype == 1:
+        if min(y_values) != 0:
+            yaxis_range = [y_ticks[0] - 0.5 * (y_ticks[1] - y_ticks[0]),
+                        y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
+        else:
+            yaxis_range = [y_ticks[0], y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
+    fig = go.Figure([go.Scatter(
+        x=x_values,
+        y=y_values,
+        mode='lines',
+        hoverinfo='y',
+        fillcolor='#E36C6C',
+        fill='tozeroy',
+        line=dict(shape='linear', color='#E35A5A'),  # spline,hv,vh,linear,hvh,vhv
+        showlegend=False,
+        hoveron='points'
+    ), go.Scatter(
+        x=x_values,
+        y=[average_val] * len(x_values),
+        line=dict(dash='dash', color='#000000'),
+        opacity=0.3,
+        hoverinfo='none',
+        showlegend=False
+    )])
+    fig.update_layout(
+        yaxis=dict(
+            tickmode='array',
+            tickvals=y_ticks,
+            ticktext=y_ticks,
+            range=yaxis_range,
+            showgrid=True,
+            # gridcolor='#CDCDCD',
+            # gridwidth=0.1,
+            showline=False,
+            linecolor='#A3A3A3',
+            linewidth=2,
+            side='right'
+        ),
+        xaxis=dict(
+            tickmode='array',
+            tickvals=[0, 3, 6, 9],
+            ticktext=['0(分钟)', '3', '6', '9'],
+            range=[0, 10],
+            showgrid=False,
+            showline=False,
+            zeroline=False,
+            linecolor='#A3A3A3',
+            linewidth=2,
+        ),
+        dragmode=False,
+        height=400,
+        margin=dict(t=30, b=20)
+    )
+    return fig
+
 def heart_rate_graph():
     min_val = value_selection[0]
     max_val = value_selection[1]
@@ -494,59 +551,10 @@ def heart_rate_graph():
         demo_value_x, demo_value_y = generate_data(max_val, min_val)
     with st.spinner('绘制中...'):
         draw_plot_1(demo_value_x, demo_value_y, result_list)
-        average_val = np.mean(demo_value_y[0])
         st.markdown('### 可交互视图（试验）- 0625')
-        fig = go.Figure([go.Scatter(
-            x = demo_value_x[0],
-            y = demo_value_y[0],
-            mode='lines',
-            hoverinfo='y',
-            fillcolor='#E36C6C',
-            fill='tozeroy',
-            line=dict(shape='linear', color='#E35A5A'),
-            showlegend=False,
-            hoveron='points'
-        ), go.Scatter(
-            x = demo_value_x[0],
-            y = [average_val] * len(demo_value_x[0]),
-            line=dict(dash='dash', color='#A3A3A3'),
-            hoverinfo='none',
-            showlegend=False
-        )])
-        y_ticks = result_list
-        fig.update_layout(
-            yaxis = dict(
-                tickmode='array',
-                tickvals = result_list,
-                ticktext=result_list,
-                range=[result_list[0] - 0.5 * (y_ticks[1] - y_ticks[0]),
-                        y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])],
-                showgrid=True,
-                gridcolor='#CDCDCD',
-                gridwidth=0.1,
-                showline=False,
-                linecolor='#A3A3A3',
-                linewidth=2,
-                side='right'
-            ),
-            xaxis=dict(
-                tickmode='array',
-                tickvals=[0, 3, 6, 9],
-                ticktext=['0(分钟)', '3', '6', '9'],
-                range=[0, 10],
-                showgrid=False,
-                showline=False,
-                zeroline=False,
-                linecolor='#A3A3A3',
-                linewidth=2,
-            ),
-            dragmode=False,
-            height=400,
-            margin=dict(t=30, b=20)
-            # title='方案一'
-        )
-        st.plotly_chart(fig)
-        st.success('完成')
+        fig1 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], result_list)
+        st.plotly_chart(fig1)
+        st.success('绘制完成')
 
 
 def latitude_graph():
