@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 
 
-def start_not_zero(value_max, value_min):
+def start_above_zero(value_max, value_min):
     if value_max < value_min:
         st.error('最大值最小值关系错误！')
     # st.markdown('#### 方案一')
@@ -83,15 +83,21 @@ def start_below_zero(value_max, value_min):
     axis_min = value_min
 
     n = 0
-    while axis_max % temp_value != 0:
-        n = n + 1
-        axis_max = axis_max + 1
+    if temp_value != 0:
+        while axis_max % temp_value != 0:
+            n = n + 1
+            axis_max = axis_max + 1
+    else:
+        pass
     print('5. 坐标轴最大值为：{} + {} = {}'.format(value_max, n, axis_max))
 
     m = 0
-    while axis_min % temp_value != 0:
-        m = m + 1
-        axis_min = axis_min - 1
+    if temp_value != 0:
+        while axis_min % temp_value != 0:
+            m = m + 1
+            axis_min = axis_min - 1
+    else:
+        pass
     print('6. 坐标轴最小值为：{} - {} = {}'.format(value_min, m, axis_min))
     axis_range = axis_max - axis_min
     result = []
@@ -301,7 +307,7 @@ def draw_plot_2(value_x, value_y, y_ticks, type=1, color='#61CE86'):
             plt.fill([0, 10, 10, 0], [value_y[i][0], value_y[i][0], 0, 0], color=color)
             plt.plot(value_x[i], value_y[i], linewidth=2, color=color)
         elif type == 2:
-            plt.scatter(value_x[i], value_y[i], s=15)
+            plt.scatter(value_x[i], value_y[i], s=9, color=color)
         elif type == 3:
             plt.bar(value_x[i], value_y[i], 1, color=color)
     st.pyplot(plt)
@@ -315,7 +321,6 @@ def draw_plot_3(value_x, value_y, y_ticks):
         plt.yticks(y_ticks)
         plt.xticks([0, 3, 6, 9], ['0(min)', '3', '6', '9'])
         c = np.mean(value_y[i])
-        plt.axhline(y=c, color="gray", ls='--', lw=2, alpha=0.5)
         ax = plt.gca()
         ax.yaxis.tick_right()
         ax.set_ylim(y_ticks[0] - 0.5 * (y_ticks[1] - y_ticks[0]),
@@ -324,11 +329,15 @@ def draw_plot_3(value_x, value_y, y_ticks):
         fill_aera_x = value_x[i].tolist()
         fill_aera_x.insert(0, 0)
         fill_aera_x.append(10)
-        fill_aera_y = value_y[i].tolist()
-        fill_aera_y.insert(0, y_ticks[0] - 0.5 * (y_ticks[1] - y_ticks[0]))
-        fill_aera_y.append(y_ticks[0] - 0.5 * (y_ticks[1] - y_ticks[0]))
-        plt.fill(fill_aera_x, fill_aera_y, color='#5FCEFF')
+        if not isinstance(value_y[i], list):
+            fill_aera_y = value_y[i].tolist()
+            fill_aera_y.insert(0, y_ticks[0] - 0.5 * (y_ticks[1] - y_ticks[0]))
+            fill_aera_y.append(y_ticks[0] - 0.5 * (y_ticks[1] - y_ticks[0]))
+            plt.fill(fill_aera_x, fill_aera_y, color='#5FCEFF')
+        else:
+            plt.fill([0, 10, 10, 0], [value_y[i][0], value_y[i][0], 0, 0], color='#5FCEFF')
         plt.plot(value_x[i], value_y[i], linewidth=2, color='#5FCEFF')   # 折线
+        plt.axhline(y=c, color="gray", ls='--', lw=2, alpha=0.5)
     st.pyplot(plt)
 
 
@@ -368,7 +377,7 @@ def generate_data(max_val, min_val):
 def heart_rate_graph():
     min_val = value_selection[0]
     max_val = value_selection[1]
-    result_list = start_not_zero(max_val, min_val)
+    result_list = start_above_zero(max_val, min_val)
     str_val = '##### 方案一坐标轴计算结果：' + str(result_list)
     st.markdown(str_val)
     with st.spinner('生成数据...'):
@@ -457,9 +466,9 @@ selection = st.selectbox('图表类型',
                           '踏频（室内单车）'))
 
 
-# 起点一定不小于0：心率
-# 起点一定为0：速度、阻力、划频（游泳）、Swolf（游泳）、步频、起跳高度、频率（跳绳）、频率（划船机）、踏频（室内单车）
-# 起点可能小于0：海拔
+# 起点一定不小于0：心率 √
+# 起点一定为0：速度 √、阻力 √、划频（游泳） √、Swolf（游泳） √、步频 √、起跳高度 √、频率（跳绳） √、频率（划船机） √、踏频（室内单车） √
+# 起点可能小于0：海拔 √
 # 配速相关：配速（游泳）、配速（非游泳）
 
 if selection == '心率':
@@ -535,5 +544,28 @@ elif selection == 'Swolf（游泳）':
     else:
         value_selection = st.slider('数值范围', min_value=0, max_value=40, value=(2, 17))
     start_by_zero_graph(3, '#5188E0')
+elif selection == '起跳高度':
+    st.markdown(f'### 2. 选取数据范围')
+    if st.button('随机生成'):
+        random_value = np.random.randint(0, 80, 2)
+        random_value.sort()
+        value_selection = st.slider('数值范围', min_value=0, max_value=80,
+                                    value=(int(random_value[0]), int(random_value[1])))
+    else:
+        value_selection = st.slider('数值范围', min_value=0, max_value=80, value=(10, 30))
+    start_by_zero_graph(2, '#FF0000')
+elif selection == '频率（划船机）' or selection == '踏频（室内单车）' or selection == '频率（跳绳）':
+    st.markdown(f'### 2. 选取数据范围')
+    if st.button('随机生成'):
+        random_value = np.random.randint(0, 200, 2)
+        random_value.sort()
+        value_selection = st.slider('数值范围', min_value=0, max_value=300,
+                                    value=(int(random_value[0]), int(random_value[1])))
+    else:
+        value_selection = st.slider('数值范围', min_value=0, max_value=300, value=(10, 50))
+    if selection == '频率（划船机）' or selection == '踏频（室内单车）':
+        start_by_zero_graph(2, '#2BBD5C')
+    else:
+        start_by_zero_graph(2, '#F5BF33')
 else:
     st.warning('未完成')
