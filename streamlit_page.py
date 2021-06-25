@@ -320,7 +320,7 @@ def draw_plot_speed(value_x, value_y, y_ticks, type=1, color='#FF0000'):
         plt.axhline(y=c, color="gray", ls='--', lw=2, alpha=0.5)
         ax = plt.gca()
         ax.yaxis.tick_right()
-        if min(value_y[i]) != 0:
+        if min(y_ticks) != 0:
             ax.set_ylim(y_ticks[0] - 0.5 * (y_ticks[1] - y_ticks[0]),
                         y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]))
         else:
@@ -599,10 +599,10 @@ elif selection == '海拔':
     if st.button('随机生成'):
         random_value = np.random.randint(300, 400, 2)
         random_value.sort()
-        value_selection = st.slider('数值范围', min_value=-3000, max_value=3500,
+        value_selection = st.slider('数值范围', min_value=-100, max_value=300,
                                     value=(int(random_value[0]), int(random_value[1])))
     else:
-        value_selection = st.slider('数值范围', min_value=-3000, max_value=3500, value=(281, 300))
+        value_selection = st.slider('数值范围', min_value=-100, max_value=300, value=(281, 300))
     latitude_graph()
 elif selection == '速度':
     st.markdown(f'### 2. 选取数据范围')
