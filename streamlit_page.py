@@ -98,16 +98,16 @@ def start_below_zero(value_max, value_min):
     if value_max < value_min:
         print('最大值最小值关系错误！')
         return
-    print('计算过程如下：')
-    print('1. 当前数据最小值为：{}，最大值为：{}'.format(value_min, value_max))
+    # print('计算过程如下：')
+    # print('1. 当前数据最小值为：{}，最大值为：{}'.format(value_min, value_max))
     value_range = value_max - value_min
-    print('2. 数值区间为：{}'.format(value_range))
+    # print('2. 数值区间为：{}'.format(value_range))
     temp_value = value_range / 3
-    print('3. temp_value 值 为：{}'.format(temp_value))
+    # print('3. temp_value 值 为：{}'.format(temp_value))
     temp_value = ceil(temp_value)
     while temp_value % 3 != 0:
         temp_value = temp_value + 1
-    print('4. 向上以3取整结果为：{}'.format(temp_value))
+    # print('4. 向上以3取整结果为：{}'.format(temp_value))
     axis_max = value_max
     axis_min = value_min
 
@@ -118,7 +118,7 @@ def start_below_zero(value_max, value_min):
             axis_max = axis_max + 1
     else:
         pass
-    print('5. 坐标轴最大值为：{} + {} = {}'.format(value_max, n, axis_max))
+    # print('5. 坐标轴最大值为：{} + {} = {}'.format(value_max, n, axis_max))
 
     m = 0
     if temp_value != 0:
@@ -127,7 +127,7 @@ def start_below_zero(value_max, value_min):
             axis_min = axis_min - 1
     else:
         pass
-    print('6. 坐标轴最小值为：{} - {} = {}'.format(value_min, m, axis_min))
+    # print('6. 坐标轴最小值为：{} - {} = {}'.format(value_min, m, axis_min))
     axis_range = axis_max - axis_min
     result = []
 
@@ -139,37 +139,55 @@ def start_below_zero(value_max, value_min):
         while axis_range % 4 != 0:
             axis_max = axis_max + 1
             axis_range = axis_max - axis_min
-        print('最大值修正值为 {}'.format(axis_max))
+        # print('最大值修正值为 {}'.format(axis_max))
         axis_each = axis_range / 4
         for i in range(5):
             result.append(axis_min + i * axis_each)
-    print('计算完毕，均分获得最终坐标轴结果...')
+    # print('计算完毕，均分获得最终坐标轴结果...')
     return result
 
 
 def start_with_zero(value_max):
     result = []
 
-    print('计算过程如下: ')
-    print('----------------------------------')
+    # print('计算过程如下: ')
+    # print('----------------------------------')
     x = value_max / 4
-    print('1. x 值 为：{}'.format(x))
+    # print('1. x 值 为：{}'.format(x))
     x = ceil(x)
     while x % 4 != 0:
         x = x + 1
-    print('2. 向上以3取整结果为：{}'.format(x))
+    # print('2. 向上以4取整结果为：{}'.format(x))
     axis_max = value_max
 
     n = 0
     while axis_max % x != 0:
         n = n + 1
         axis_max = axis_max + 1
-    print('3. 坐标轴最大值为：{} + {} = {}'.format(value_max, n, axis_max))
+    # print('3. 坐标轴最大值为：{} + {} = {}'.format(value_max, n, axis_max))
     range_value = axis_max / 4
     for i in range(3, -1, -1):
         result.append(axis_max - i * range_value)
-    print('----------------------------------')
-    print('计算完毕，均分获得最终坐标轴结果...')
+    # print('----------------------------------')
+    # print('计算完毕，均分获得最终坐标轴结果...')
+    return result
+
+
+def start_with_zero_upgrade(value_max):
+    result = []
+
+    axis_max = value_max
+
+    n = 0
+    while axis_max % 20 != 0:
+        n = n + 1
+        axis_max = axis_max + 1
+    # print('3. 坐标轴最大值为：{} + {} = {}'.format(value_max, n, axis_max))
+    range_value = axis_max / 4
+    for i in range(3, -1, -1):
+        result.append(axis_max - i * range_value)
+    # print('----------------------------------')
+    # print('计算完毕，均分获得最终坐标轴结果...')
     return result
 
 
@@ -179,7 +197,7 @@ def speed_graph(value_max, value_min):
     temp = ceil(temp)
     while temp % 3 != 0:
         temp = temp + 1
-    print(temp)
+    # print(temp)
     axis_max = value_max
     axis_min = value_min
 
@@ -190,7 +208,7 @@ def speed_graph(value_max, value_min):
             axis_max = axis_max + 1
     else:
         pass
-    print('坐标轴最大值为：{} + {} = {}'.format(value_max, n, axis_max))
+    # print('坐标轴最大值为：{} + {} = {}'.format(value_max, n, axis_max))
 
     m = 0
     if temp != 0:
@@ -203,7 +221,7 @@ def speed_graph(value_max, value_min):
                 break
     else:
         pass
-    print('坐标轴最小值为：{} - {} = {}'.format(value_min, m, axis_min))
+    # print('坐标轴最小值为：{} - {} = {}'.format(value_min, m, axis_min))
     axis_range = axis_max - axis_min
     result_num = []
     result = []
@@ -219,7 +237,7 @@ def speed_graph(value_max, value_min):
             result.append(res_str)
     else:
         axis_each = axis_range / 4
-        print(axis_each)
+        # print(axis_each)
         for i in range(5):
             secs = axis_min + i * axis_each
             result_num.append(secs)
@@ -227,8 +245,8 @@ def speed_graph(value_max, value_min):
             sec_res = int(secs % 60)
             res_str = '{}\'{}\'\''.format(min_res, sec_res)
             result.append(res_str)
-    print(result_num)
-    print(result)
+    # print(result_num)
+    # print(result)
     return result_num, result
 
 
@@ -241,7 +259,7 @@ def speed_graph2(value_max, value_min):
     # while axis_max % 30 != 0:
     #     n = n + 1
     #     axis_max = axis_max + 1
-    print('坐标轴最大值为：{} + {} = {}'.format(value_max, n, axis_max))
+    # print('坐标轴最大值为：{} + {} = {}'.format(value_max, n, axis_max))
 
     m = 0
     while axis_min % 30 != 0:
@@ -251,7 +269,7 @@ def speed_graph2(value_max, value_min):
             axis_min = 0
             m = value_min
             break
-    print('坐标轴最小值为：{} - {} = {}'.format(value_min, m, axis_min))
+    # print('坐标轴最小值为：{} - {} = {}'.format(value_min, m, axis_min))
     axis_range = axis_max - axis_min
     result = []
     result_num = []
@@ -289,7 +307,7 @@ def speed_graph3(value_max, value_min):
     while axis_max % 20 != 0:
         n = n + 1
         axis_max = axis_max + 1
-    print('坐标轴最大值为：{} + {} = {}'.format(value_max, n, axis_max))
+    # print('坐标轴最大值为：{} + {} = {}'.format(value_max, n, axis_max))
 
     m = 0
     while axis_min % 20 != 0:
@@ -299,7 +317,7 @@ def speed_graph3(value_max, value_min):
             axis_min = 0
             m = value_min
             break
-    print('坐标轴最小值为：{} - {} = {}'.format(value_min, m, axis_min))
+    # print('坐标轴最小值为：{} - {} = {}'.format(value_min, m, axis_min))
     axis_range = axis_max - axis_min
     result = []
     result_num = []
@@ -315,7 +333,7 @@ def speed_graph3(value_max, value_min):
             result.append(res_str)
     else:
         axis_each = axis_range / 5
-        print(axis_each)
+        # print(axis_each)
         for i in range(6):
             secs = axis_min + i * axis_each
             result_num.append(secs)
@@ -511,6 +529,12 @@ def draw_plotly_graph(x_values, y_values, y_ticks, limtype=1, graph_type=1, line
         yaxis_range = [y_ticks[0] - 0.5 * (y_ticks[1] - y_ticks[0]), y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
     elif limtype == 3:
         yaxis_range = [0, y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
+    elif limtype == 4:
+        if min(y_ticks) > 0:
+            yaxis_range = [y_ticks[0] - 0.5 * (y_ticks[1] - y_ticks[0]),
+                           y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
+        else:
+            yaxis_range = [0, y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
     elif limtype == 'zepp':
         yaxis_range = [y_ticks[0], y_ticks[-1]]
     elif limtype == 9:
@@ -638,22 +662,52 @@ def heart_rate_graph():
         st.success('绘制完成')
 
 
+def zepp_latitude_ticks(max_val, min_val):
+    A = min_val
+    min_axis = int(np.floor(A))
+    while min_axis % 5 != 0:
+        min_axis = min_axis - 1
+    axis_max = min_axis
+    interval = 0
+    if max_val - min_val <= 30:
+        ticks_interval = 10
+        return [min_axis,
+                min_axis + 1 * ticks_interval,
+                min_axis + 2 * ticks_interval,
+                min_axis + 3 * ticks_interval]
+    else:
+        m = max_val  # m为数据的最大值
+        print(m)
+        while m >= axis_max:
+            interval = interval + 5
+            axis_max = min_axis + interval * 3
+        return [min_axis,
+                min_axis + 1 * interval,
+                min_axis + 2 * interval,
+                min_axis + 3 * interval]
+
+
 def latitude_graph():
     min_val = value_selection[0]
     max_val = value_selection[1]
     result_list = start_below_zero(max_val, min_val)
+    zepp_case = zepp_latitude_ticks(max_val, min_val)
     st.write("选择了", value_selection)
-    str_val = '##### 方案一坐标轴计算结果：' + str(result_list)
-    st.markdown(str_val)
+    # str_val = '##### 方案一坐标轴计算结果：' + str(result_list)
+    # st.markdown(str_val)
     with st.spinner('生成数据...'):
         time.sleep(0.5)
         demo_value_x, demo_value_y = generate_data(max_val, min_val)
     with st.spinner('绘制中...'):
-        draw_plot_3(demo_value_x, demo_value_y, result_list)
+        # draw_plot_3(demo_value_x, demo_value_y, result_list)
         st.markdown('### 可交互视图（试验）- 0625')
         st.markdown('#### 方案一（' + str(result_list)[1:-1] + '）')
         fig1 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], result_list, limtype=2, line_color='#30C1FF', fillcolor='#30C1FF')  # fillcolor='#2FC8E4'
         st.plotly_chart(fig1)
+        st.markdown('#### 方案二 Zepp（' + str(zepp_case)[1:-1] + '）')
+        fig2 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], zepp_case, limtype=4, line_color='#30C1FF',
+                                 fillcolor='#30C1FF')  # fillcolor='#2FC8E4'
+        st.plotly_chart(fig2)
         st.success('绘制完成')
 
 
@@ -723,7 +777,7 @@ def start_by_zero_graph(type=1, color='#61CE86', sport='sudu'):
 
         if sport == 'sudu':
             zepp_case = zepp_speed_km_ticks(max_val, min_val)
-        elif sport == 'huapinyy' or 'swolf':
+        elif sport == 'huapinyy' or sport == 'swolf':
             zepp_case = zepp_stroke_fre_swim_ticks(max_val, min_val)
             zepp_case_upgrade = zepp_stroke_fre_swim_ticks_upgrade(max_val, min_val)
         elif sport == 'bupin':
@@ -748,6 +802,11 @@ def start_by_zero_graph(type=1, color='#61CE86', sport='sudu'):
             fig2 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], zepp_case, limtype=1, line_color=color,
                                      fillcolor=color, graph_type=type)  # fillcolor='#2FC8E4'
             st.plotly_chart(fig2)
+            upg = start_with_zero_upgrade(max_val)
+            st.markdown('#### 方案三 一改进（' + str(zepp_case)[1:-1] + '）')
+            fig3 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], upg, limtype=3, line_color=color,
+                                     fillcolor=color, graph_type=type)  # fillcolor='#2FC8E4'
+            st.plotly_chart(fig3)
         st.success('绘制完成')
 
 
@@ -864,6 +923,7 @@ elif selection == '配速（非游泳）' or selection == '配速（游泳）':
     col1, col2 = st.beta_columns(2)
     speed_low = col1.text_input('输入最快配速：', '3:10')
     speed_high = col2.text_input('输入最慢配速：', '8:10')
+    st.warning('本部分图表暂不完整')
     if st.button('计算并绘制'):
         if selection == '配速（非游泳）':
             for_speed_graph_1(1)
