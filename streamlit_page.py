@@ -7,6 +7,34 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
 
+# Zepp 速度
+def zepp_speed_km_ticks(value_max, value_min):
+    A = value_max
+    B = value_min
+    A = int(np.ceil(A))
+    B = int(np.floor(B))
+    # 省略处理？
+    X = A * 1000
+    Y = B * 1000
+    C = (X - Y) / 3
+    D = C / 500
+    D = int(np.ceil(D))
+    ticks_interval = 500 * D
+    ticks_interval_km = ticks_interval / 1000
+    skip_val = X
+    while skip_val % 500 != 0:
+        skip_val = skip_val + 1
+    skip_val_km = skip_val / 1000
+    if A - B <= 3:
+        result_ticks = [A - 3, A - 2, A - 1, A]
+    else:
+        result_ticks = [skip_val_km - 3 * ticks_interval_km,
+                        skip_val_km - 2 * ticks_interval_km,
+                        skip_val_km - 1 * ticks_interval_km,
+                        skip_val_km]
+    return result_ticks
+
+
 
 def start_above_zero(value_max, value_min):
     if value_max < value_min:
@@ -373,21 +401,6 @@ def draw_plot_1(value_x, value_y, y_ticks):
         else:
             plt.fill([0, 10, 10, 0], [value_y[i][0], value_y[i][0], 0, 0], color='#E35A5A')
         plt.plot(value_x[i], value_y[i], linewidth=2, color='#E35A5A')   # 折线
-        # plt.subplot(10, 2, 2 * i + 2)
-        # plt.yticks(y_ticks)
-        # plt.xticks([0, 3, 6, 9], ['0(min)', '3', '6', '9'])
-        # c = np.mean(value_y[i])
-        # plt.axhline(y=c, color="gray", ls='--', lw=2, alpha=0.5)
-        # ax = plt.gca()
-        # ax.yaxis.tick_right()
-        # if min(value_y[i]) != 0:
-        #     ax.set_ylim(y_ticks[0] - 0.5 * (y_ticks[1] - y_ticks[0]),
-        #                 y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]))
-        # else:
-        #     ax.set_ylim(y_ticks[0], y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]))
-        # ax.set_xlim(0, 10)
-        # plt.scatter(value_x[i], value_y[i], s=15)
-    # plt.show()
     st.pyplot(plt)
 
 # 起点一定为0
@@ -456,12 +469,12 @@ def generate_bar_data(max_val, min_val):
     value_y_result = []
     for i in range(10):
         if min_val != max_val:
-            demo_value_y = np.random.randint(min_val, max_val, 10)
+            demo_value_y = np.random.randint(min_val, max_val, 21)
         else:
-            demo_value_y = [min_val] * 10
+            demo_value_y = [min_val] * 21
         demo_value_y[3] = min_val
         demo_value_y[-3] = max_val
-        demo_value_x = np.arange(0.5, 9.6, 1)
+        demo_value_x = np.arange(0, 10.1, 0.5)
         value_x_result.append(demo_value_x)
         value_y_result.append(demo_value_y)
     return value_x_result, value_y_result
@@ -482,18 +495,46 @@ def generate_data(max_val, min_val):
         value_y_result.append(demo_value_y)
     return value_x_result, value_y_result
 
+
 # graph_type   1-折线  2-散点   3-段
 # limtype    1-心率等大于等于0   2-海拔等可小于0  3-低点一定等于0
 def draw_plotly_graph(x_values, y_values, y_ticks, limtype=1, graph_type=1, line_color='#E35A5A', fillcolor='#E36C6C'):
     average_val = np.mean(y_values)
+    yaxis_range = []
     if limtype == 1:
-        if min(y_values) != 0:
+        if min(y_ticks) != 0:
             yaxis_range = [y_ticks[0] - 0.5 * (y_ticks[1] - y_ticks[0]),
                         y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
         else:
             yaxis_range = [y_ticks[0], y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
     elif limtype == 2:
         yaxis_range = [y_ticks[0] - 0.5 * (y_ticks[1] - y_ticks[0]), y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
+    elif limtype == 3:
+        yaxis_range = [0, y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
+    elif limtype == 'zepp':
+        yaxis_range = [y_ticks[0], y_ticks[-1]]
+    elif limtype == 9:
+        yaxis_range = [0, 230]
+    go_average = go.Scatter(
+        x=x_values,
+        y=[average_val] * len(x_values),
+        line=dict(dash='dash', color='#000000'),
+        opacity=0.3,
+        hoverinfo='none',
+        showlegend=False
+        )
+    if graph_type == 1:
+        go_val = go.Scatter(
+            x=x_values,
+            y=y_values,
+            mode='lines',
+            hoverinfo='y',
+            fillcolor=fillcolor,
+            # fill='tozeroy',
+            line=dict(shape='linear', color=line_color),  # spline,hv,vh,linear,hvh,vhv
+            showlegend=False,
+            hoveron='points'
+        )
         low_val_num = yaxis_range[0]
         go_down = go.Scatter(
             x=x_values,
@@ -505,31 +546,44 @@ def draw_plotly_graph(x_values, y_values, y_ticks, limtype=1, graph_type=1, line
             hoverinfo='none',
             showlegend=False
         )
-    elif limtype == 9:
-        yaxis_range = [0, 230]
-    go_average = go.Scatter(
-        x=x_values,
-        y=[average_val] * len(x_values),
-        line=dict(dash='dash', color='#000000'),
-        opacity=0.3,
-        hoverinfo='none',
-        showlegend=False
-        )
-    go_val = go.Scatter(
-        x=x_values,
-        y=y_values,
-        mode='lines',
-        hoverinfo='y',
-        fillcolor=fillcolor,
-        # fill='tozeroy',
-        line=dict(shape='linear', color=line_color),  # spline,hv,vh,linear,hvh,vhv
-        showlegend=False,
-        hoveron='points'
-    )
-    if limtype == 2 and low_val_num < 0:
+
         fig = go.Figure([go_val, go_down, go_average])
-    else:
+    elif graph_type == 2:
+        go_val = go.Scatter(
+            x=x_values,
+            y=y_values,
+            mode='markers',
+            hoverinfo='y',
+            marker=dict(color=line_color),
+            showlegend=False,
+            hoveron='points'
+        )
         fig = go.Figure([go_val, go_average])
+    elif graph_type == 3:
+        go_val = go.Scatter(
+            x=x_values,
+            y=y_values,
+            mode='lines',
+            hoverinfo='y',
+            fillcolor=fillcolor,
+            # fill='tozeroy',
+            line=dict(shape='hv', color=line_color),  # spline,hv,vh,linear,hvh,vhv
+            showlegend=False,
+            hoveron='points'
+        )
+        low_val_num = yaxis_range[0]
+        go_down = go.Scatter(
+            x=x_values,
+            y=[low_val_num] * len(x_values),
+            line=dict(dash='dash', color='#000000', width=0),
+            opacity=0.1,
+            fillcolor=fillcolor,
+            fill='tonexty',
+            hoverinfo='none',
+            showlegend=False
+        )
+        fig = go.Figure([go_val, go_down, go_average])
+
     fig.update_layout(
         yaxis=dict(
             tickmode='array',
@@ -602,12 +656,53 @@ def latitude_graph():
         st.plotly_chart(fig1)
         st.success('绘制完成')
 
-def start_by_zero_graph(type=1, color='#61CE86'):
+
+def zepp_stroke_fre_swim_ticks(max_val, min_val):
+    A = max_val
+    B = A / 3
+    C = int(np.ceil(B))
+    while C % 5 != 0:
+        C = C + 1
+    result = [0, C, 2 * C, 3 * C]
+    return result
+
+
+def zepp_stroke_fre_swim_ticks_upgrade(max_val, min_val):
+    A = max_val
+    B = A / 4
+    C = int(np.ceil(B))
+    while C % 5 != 0:
+        C = C + 1
+    result = [0, C, 2 * C, 3 * C, 4 * C]
+    return result
+
+
+def zepp_running_cadence_ticks(max_val, min_val):
+    A = max_val
+    B = min_val
+    C = A
+    Z = B
+    while C % 10 != 0:
+        C = C + 1
+    while Z % 10 != 0:
+        Z = Z - 1
+    D = (C - Z) / 3
+    E = D / 5
+    F = int(np.ceil(E))
+    if C - Z <= 60:
+        ticks_interval = 20
+    else:
+        ticks_interval = F * 5
+    result = [Z,
+              Z + 1 * ticks_interval,
+              Z + 2 * ticks_interval,
+              Z + 3 * ticks_interval]
+    return result
+
+
+def start_by_zero_graph(type=1, color='#61CE86', sport='sudu'):
     min_val = value_selection[0]
     max_val = value_selection[1]
-    result_list = start_with_zero(max_val)
-    str_val = '##### 方案一坐标轴计算结果：' + str(result_list)
-    st.markdown(str_val)
     with st.spinner('生成数据...'):
         time.sleep(0.5)
         if type == 1 or type == 2:
@@ -615,8 +710,45 @@ def start_by_zero_graph(type=1, color='#61CE86'):
         elif type == 3:
             demo_value_x, demo_value_y = generate_bar_data(max_val, min_val)
     with st.spinner('绘制中...'):
-        draw_plot_2(demo_value_x, demo_value_y, result_list, type, color)
+        result_list = start_with_zero(max_val)
+        # str_val = '##### 方案一坐标轴计算结果：' + str(result_list)
+        # st.markdown(str_val)
+        #
+        # draw_plot_2(demo_value_x, demo_value_y, result_list, type, color)
+        st.markdown('### 可交互视图（试验）- 0625')
+        st.markdown('#### 方案一（' + str(result_list)[1:-1] + '）')
+        fig1 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], result_list, limtype=3, line_color=color,
+                                 fillcolor=color, graph_type=type)  # fillcolor='#2FC8E4'
+        st.plotly_chart(fig1)
 
+        if sport == 'sudu':
+            zepp_case = zepp_speed_km_ticks(max_val, min_val)
+        elif sport == 'huapinyy' or 'swolf':
+            zepp_case = zepp_stroke_fre_swim_ticks(max_val, min_val)
+            zepp_case_upgrade = zepp_stroke_fre_swim_ticks_upgrade(max_val, min_val)
+        elif sport == 'bupin':
+            zepp_case = zepp_running_cadence_ticks(max_val, min_val)
+
+        if sport in ['sudu']:
+            st.markdown('#### 方案二 Zepp（' + str(zepp_case)[1:-1] + '）')
+            fig2 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], zepp_case, limtype=2, line_color=color,
+                                     fillcolor=color, graph_type=type)  # fillcolor='#2FC8E4'
+            st.plotly_chart(fig2)
+        elif sport in ['huapinyy', 'swolf']:
+            st.markdown('#### 方案二 Zepp（' + str(zepp_case)[1:-1] + '）')
+            fig2 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], zepp_case, limtype=3, line_color=color,
+                                     fillcolor=color, graph_type=type)  # fillcolor='#2FC8E4'
+            st.plotly_chart(fig2)
+            st.markdown('#### 方案三 Zepp + 改进（' + str(zepp_case)[1:-1] + '）')
+            fig3 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], zepp_case_upgrade, limtype=3, line_color=color,
+                                     fillcolor=color, graph_type=type)  # fillcolor='#2FC8E4'
+            st.plotly_chart(fig3)
+        elif sport in ['bupin']:
+            st.markdown('#### 方案二 Zepp（' + str(zepp_case)[1:-1] + '）')
+            fig2 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], zepp_case, limtype=1, line_color=color,
+                                     fillcolor=color, graph_type=type)  # fillcolor='#2FC8E4'
+            st.plotly_chart(fig2)
+        st.success('绘制完成')
 
 
 def for_speed_graph_1(type=1, color='#FF0000'):
@@ -650,7 +782,6 @@ def for_speed_graph_1(type=1, color='#FF0000'):
     st.markdown(str_val)
     with st.spinner('绘制中...'):
         draw_plot_speed(demo_value_x, demo_value_y, result_list_3, type=type, color='#2AC288')
-
 
 
 st.set_page_config(page_title='图表绘制模拟')
@@ -707,7 +838,7 @@ elif selection == '速度':
                                     value=(int(random_value[0]), int(random_value[1])))
     else:
         value_selection = st.slider('数值范围', min_value=0, max_value=200, value=(12, 24))
-    start_by_zero_graph()
+    start_by_zero_graph(sport='sudu')
 elif selection == '阻力':
     st.markdown(f'### 2. 选取数据范围')
     if st.button('随机生成'):
@@ -717,7 +848,7 @@ elif selection == '阻力':
                                     value=(int(random_value[0]), int(random_value[1])))
     else:
         value_selection = st.slider('数值范围', min_value=0, max_value=60, value=(12, 24))
-    start_by_zero_graph(3)
+    start_by_zero_graph(type=3, sport='zuli')
 elif selection == '步频':
     st.markdown(f'### 2. 选取数据范围')
     if st.button('随机生成'):
@@ -727,7 +858,7 @@ elif selection == '步频':
                                     value=(int(random_value[0]), int(random_value[1])))
     else:
         value_selection = st.slider('数值范围', min_value=0, max_value=300, value=(45, 135))
-    start_by_zero_graph(2)
+    start_by_zero_graph(2, sport='bupin')
 elif selection == '配速（非游泳）' or selection == '配速（游泳）':
     st.markdown(f'### 2. 选取数据范围')
     col1, col2 = st.beta_columns(2)
@@ -747,7 +878,7 @@ elif selection == '划频（游泳）':
                                     value=(int(random_value[0]), int(random_value[1])))
     else:
         value_selection = st.slider('数值范围', min_value=0, max_value=300, value=(2, 17))
-    start_by_zero_graph(3, '#1CC3DF')
+    start_by_zero_graph(3, '#1CC3DF', sport='huapinyy')
 elif selection == 'Swolf（游泳）':
     st.markdown(f'### 2. 选取数据范围')
     if st.button('随机生成'):
@@ -757,7 +888,7 @@ elif selection == 'Swolf（游泳）':
                                     value=(int(random_value[0]), int(random_value[1])))
     else:
         value_selection = st.slider('数值范围', min_value=0, max_value=300, value=(2, 17))
-    start_by_zero_graph(3, '#5188E0')
+    start_by_zero_graph(3, '#5188E0', sport='swolf')
 elif selection == '起跳高度':
     st.markdown(f'### 2. 选取数据范围')
     if st.button('随机生成'):
@@ -767,7 +898,7 @@ elif selection == '起跳高度':
                                     value=(int(random_value[0]), int(random_value[1])))
     else:
         value_selection = st.slider('数值范围', min_value=0, max_value=80, value=(10, 30))
-    start_by_zero_graph(2, '#FF0000')
+    start_by_zero_graph(2, '#FF0000', sport='qitiaogaodu')
 elif selection == '频率（划船机）' or selection == '踏频（室内单车）' or selection == '频率（跳绳）':
     st.markdown(f'### 2. 选取数据范围')
     if st.button('随机生成'):
@@ -778,8 +909,8 @@ elif selection == '频率（划船机）' or selection == '踏频（室内单车
     else:
         value_selection = st.slider('数值范围', min_value=0, max_value=300, value=(10, 50))
     if selection == '频率（划船机）' or selection == '踏频（室内单车）':
-        start_by_zero_graph(2, '#2BBD5C')
+        start_by_zero_graph(2, '#2BBD5C', sport='pinlv_hcj_dc')
     else:
-        start_by_zero_graph(2, '#F5BF33')
+        start_by_zero_graph(2, '#F5BF33', sport='pinlv_ts')
 else:
     st.warning('未完成')
