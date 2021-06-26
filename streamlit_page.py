@@ -483,7 +483,7 @@ def generate_data(max_val, min_val):
     return value_x_result, value_y_result
 
 # graph_type   1-折线  2-散点   3-段
-# limtype    1-心率等大于等于0   2-海拔等可小于0
+# limtype    1-心率等大于等于0   2-海拔等可小于0  3-低点一定等于0
 def draw_plotly_graph(x_values, y_values, y_ticks, limtype=1, graph_type=1, line_color='#E35A5A', fillcolor='#E36C6C'):
     average_val = np.mean(y_values)
     if limtype == 1:
@@ -500,9 +500,8 @@ def draw_plotly_graph(x_values, y_values, y_ticks, limtype=1, graph_type=1, line
             y=[low_val_num] * len(x_values),
             line=dict(dash='dash', color='#000000', width=0),
             opacity=0.1,
-
             fillcolor=fillcolor,
-            fill='tozeroy',
+            fill='tonexty',
             hoverinfo='none',
             showlegend=False
         )
@@ -522,7 +521,7 @@ def draw_plotly_graph(x_values, y_values, y_ticks, limtype=1, graph_type=1, line
         mode='lines',
         hoverinfo='y',
         fillcolor=fillcolor,
-        fill='tozeroy',
+        # fill='tozeroy',
         line=dict(shape='linear', color=line_color),  # spline,hv,vh,linear,hvh,vhv
         showlegend=False,
         hoveron='points'
@@ -540,6 +539,7 @@ def draw_plotly_graph(x_values, y_values, y_ticks, limtype=1, graph_type=1, line
             showgrid=True,
             # gridcolor='#CDCDCD',
             # gridwidth=0.1,
+            zeroline=False,
             showline=False,
             linecolor='#A3A3A3',
             linewidth=2,
@@ -598,7 +598,7 @@ def latitude_graph():
         draw_plot_3(demo_value_x, demo_value_y, result_list)
         st.markdown('### 可交互视图（试验）- 0625')
         st.markdown('#### 方案一（' + str(result_list)[1:-1] + '）')
-        fig1 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], result_list, limtype=2, line_color='#30C1FF', fillcolor='#2FC8E4')
+        fig1 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], result_list, limtype=2, line_color='#30C1FF', fillcolor='#30C1FF')  # fillcolor='#2FC8E4'
         st.plotly_chart(fig1)
         st.success('绘制完成')
 
