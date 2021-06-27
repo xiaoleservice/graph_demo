@@ -516,15 +516,35 @@ def generate_data(max_val, min_val):
 
 # graph_type   1-折线  2-散点   3-段
 # limtype    1-心率等大于等于0   2-海拔等可小于0  3-低点一定等于0
-def draw_plotly_graph(x_values, y_values, y_ticks, limtype=1, graph_type=1, line_color='#E35A5A', fillcolor='#E36C6C'):
+def draw_plotly_graph(x_values, y_values, y_ticks, limtype=1, graph_type=1, line_color='#E35A5A', fillcolor='#E36C6C', speed_type=0):
     average_val = np.mean(y_values)
     yaxis_range = []
+    time_label = []
+    if speed_type != 0:
+        for i in range(len(y_ticks)):
+            secs = y_ticks[i]
+            min_res = floor(secs / 60)
+            sec_res = int(secs % 60)
+            res_str = '{}\'{}\'\''.format(min_res, sec_res)
+            time_label.append(res_str)
+    if len(time_label) != 0:
+        y_label = time_label
+    else:
+        y_label = y_ticks
+
     if limtype == 1:
-        if min(y_ticks) != 0:
-            yaxis_range = [y_ticks[0] - 0.5 * (y_ticks[1] - y_ticks[0]),
-                        y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
+        if speed_type == 1:
+            if min(y_ticks) != 0:
+                yaxis_range = [y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]),
+                               y_ticks[0] - 0.5 * (y_ticks[1] - y_ticks[0])]
+            else:
+                yaxis_range = [y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0]), y_ticks[0]]
         else:
-            yaxis_range = [y_ticks[0], y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
+            if min(y_ticks) != 0:
+                yaxis_range = [y_ticks[0] - 0.5 * (y_ticks[1] - y_ticks[0]),
+                            y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
+            else:
+                yaxis_range = [y_ticks[0], y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
     elif limtype == 2:
         yaxis_range = [y_ticks[0] - 0.5 * (y_ticks[1] - y_ticks[0]), y_ticks[-1] + 0.5 * (y_ticks[1] - y_ticks[0])]
     elif limtype == 3:
@@ -612,7 +632,7 @@ def draw_plotly_graph(x_values, y_values, y_ticks, limtype=1, graph_type=1, line
         yaxis=dict(
             tickmode='array',
             tickvals=y_ticks,
-            ticktext=y_ticks,
+            ticktext=y_label,
             range=yaxis_range,
             showgrid=True,
             # gridcolor='#CDCDCD',
@@ -793,7 +813,7 @@ def start_by_zero_graph(type=1, color='#61CE86', sport='sudu'):
             fig2 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], zepp_case, limtype=3, line_color=color,
                                      fillcolor=color, graph_type=type)  # fillcolor='#2FC8E4'
             st.plotly_chart(fig2)
-            st.markdown('#### 方案三 Zepp + 改进（' + str(zepp_case)[1:-1] + '）')
+            st.markdown('#### 方案三 Zepp + 改进（' + str(zepp_case_upgrade)[1:-1] + '）')
             fig3 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], zepp_case_upgrade, limtype=3, line_color=color,
                                      fillcolor=color, graph_type=type)  # fillcolor='#2FC8E4'
             st.plotly_chart(fig3)
@@ -810,7 +830,41 @@ def start_by_zero_graph(type=1, color='#61CE86', sport='sudu'):
         st.success('绘制完成')
 
 
-def for_speed_graph_1(type=1, color='#FF0000'):
+def zepp_pace_noswim(max_value, min_value):
+    A = min_value
+    B = max_value
+    C = B - A
+    if C >= 180:
+        if C % 30 == 0:
+            ticks_interval = 30 * int(C / 30)
+        else:
+            ticks_interval = 30 * int(np.ceil(C / 30))
+    else:
+        ticks_interval = 60
+    if B >= 1500:
+        result = [1500 - 3 * ticks_interval,
+                  1500 - 2 * ticks_interval,
+                  1500 - 1 * ticks_interval,
+                  1500]
+    else:
+        while B % 30 != 0:
+            B = B + 1
+        result = [B - 3 * ticks_interval,
+                  B - 2 * ticks_interval,
+                  B - 1 * ticks_interval,
+                  B]
+    return result
+
+
+def zepp_pace_swim(max_value, min_value):
+    # A = max_value
+    # B = min_value
+    # if A - B <= 90 and A < 150:
+    st.warning('Zepp 方案说明不明确')
+    pass
+
+
+def for_speed_graph_1(type=1, color='#FF0000', yy=False):
     try:
         min_val_min, min_val_sec = map(int, speed_low.split(':'))
         max_val_min, max_val_sec = map(int, speed_high.split(':'))
@@ -821,8 +875,15 @@ def for_speed_graph_1(type=1, color='#FF0000'):
     except Exception as e:
         print('数值输入错误！')
     result_list = speed_graph(max_value, min_value)[0]
-    str_val = '##### 方案一坐标轴计算结果：' + str(result_list)
-    st.markdown(str_val)
+    result_list_2 = speed_graph2(max_value, min_value)[0]
+    result_list_3 = speed_graph3(max_value, min_value)[0]
+    if yy == False:
+        zepp_case = zepp_pace_noswim(max_value, min_value)
+    else:
+        # zepp_case = zepp_pace_swim(max_value, min_value)
+        st.error('Zepp 方案说明待确认，结果暂不予展示')
+    # str_val = '##### 方案一坐标轴计算结果：' + str(result_list)
+    # st.markdown(str_val)
     with st.spinner('生成数据...'):
         time.sleep(0.5)
         if type == 1:
@@ -830,17 +891,39 @@ def for_speed_graph_1(type=1, color='#FF0000'):
         elif type == 3:
             demo_value_x, demo_value_y = generate_bar_data(max_value, min_value)
     with st.spinner('绘制中...'):
-        draw_plot_speed(demo_value_x, demo_value_y, result_list, type=type, color='#2AC288')
-    result_list_2 = speed_graph2(max_value, min_value)[0]
-    str_val = '##### 方案二坐标轴计算结果：' + str(result_list_2)
-    st.markdown(str_val)
+        st.markdown('#### 方案一（' + str(result_list)[1:-1] + '）')
+        # draw_plot_speed(demo_value_x, demo_value_y, result_list, type=type, color='#2AC288')
+        # print(result_list)
+        fig1 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], result_list, limtype=1, line_color='#2AC288',
+                                 fillcolor='#2AC288', graph_type=type, speed_type=1)  # fillcolor='#2FC8E4'
+        st.plotly_chart(fig1)
+
+    # str_val = '##### 方案二坐标轴计算结果：' + str(result_list_2)
+    # st.markdown(str_val)
     with st.spinner('绘制中...'):
-        draw_plot_speed(demo_value_x, demo_value_y, result_list_2, type=type, color='#2AC288')
-    result_list_3 = speed_graph3(max_value, min_value)[0]
-    str_val = '##### 方案三坐标轴计算结果：' + str(result_list_3)
-    st.markdown(str_val)
+        st.markdown('#### 方案二（' + str(result_list_2)[1:-1] + '）')
+        # draw_plot_speed(demo_value_x, demo_value_y, result_list_2, type=type, color='#2AC288')
+        fig2 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], result_list_2, limtype=1, line_color='#2AC288',
+                                 fillcolor='#2AC288', graph_type=type, speed_type=1)  # fillcolor='#2FC8E4'
+        st.plotly_chart(fig2)
+
+    # str_val = '##### 方案三坐标轴计算结果：' + str(result_list_3)
+    # st.markdown(str_val)
     with st.spinner('绘制中...'):
-        draw_plot_speed(demo_value_x, demo_value_y, result_list_3, type=type, color='#2AC288')
+        st.markdown('#### 方案三（' + str(result_list_3)[1:-1] + '）')
+        # draw_plot_speed(demo_value_x, demo_value_y, result_list_3, type=type, color='#2AC288')
+        fig3 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], result_list_3, limtype=1, line_color='#2AC288',
+                                 fillcolor='#2AC288', graph_type=type, speed_type=1)  # fillcolor='#2FC8E4'
+        st.plotly_chart(fig3)
+
+        try:
+            st.markdown('#### 方案四 Zepp（' + str(zepp_case)[1:-1] + '）')
+            # draw_plot_speed(demo_value_x, demo_value_y, result_list_3, type=type, color='#2AC288')
+            fig4 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], zepp_case, limtype=1, line_color='#2AC288',
+                                     fillcolor='#2AC288', graph_type=type, speed_type=1)  # fillcolor='#2FC8E4'
+            st.plotly_chart(fig4)
+        except Exception as e:
+            st.error('Zepp 方案说明待确认')
 
 
 st.set_page_config(page_title='图表绘制模拟')
@@ -923,12 +1006,11 @@ elif selection == '配速（非游泳）' or selection == '配速（游泳）':
     col1, col2 = st.beta_columns(2)
     speed_low = col1.text_input('输入最快配速：', '3:10')
     speed_high = col2.text_input('输入最慢配速：', '8:10')
-    st.warning('本部分图表暂不完整')
     if st.button('计算并绘制'):
         if selection == '配速（非游泳）':
             for_speed_graph_1(1)
         else:
-            for_speed_graph_1(3)
+            for_speed_graph_1(3, yy=True)
 elif selection == '划频（游泳）':
     st.markdown(f'### 2. 选取数据范围')
     if st.button('随机生成'):
