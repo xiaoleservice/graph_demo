@@ -683,7 +683,7 @@ def heart_rate_graph():
         mifit_case1 = [40, 80, 120, 160, 200]
         fig2 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], mifit_case1, 9, 1)
         st.plotly_chart(fig1)
-        st.markdown('#### 方案二（Zepp）（' + str(mifit_case1)[1:-1] + '）')
+        st.markdown('#### 方案二（' + str(mifit_case1)[1:-1] + '）')
         st.plotly_chart(fig2)
         st.success('绘制完成')
 
@@ -730,7 +730,7 @@ def latitude_graph():
         st.markdown('#### 方案一（' + str(result_list)[1:-1] + '）')
         fig1 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], result_list, limtype=2, line_color='#30C1FF', fillcolor='#30C1FF')  # fillcolor='#2FC8E4'
         st.plotly_chart(fig1)
-        st.markdown('#### 方案二 Zepp（' + str(zepp_case)[1:-1] + '）')
+        st.markdown('#### 方案二（' + str(zepp_case)[1:-1] + '）')
         fig2 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], zepp_case, limtype=4, line_color='#30C1FF',
                                  fillcolor='#30C1FF')  # fillcolor='#2FC8E4'
         st.plotly_chart(fig2)
@@ -810,26 +810,26 @@ def start_by_zero_graph(type=1, color='#61CE86', sport='sudu'):
             zepp_case = zepp_running_cadence_ticks(max_val, min_val)
 
         if sport in ['sudu']:
-            st.markdown('#### 方案二 Zepp（' + str(zepp_case)[1:-1] + '）')
+            st.markdown('#### 方案二（' + str(zepp_case)[1:-1] + '）')
             fig2 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], zepp_case, limtype=2, line_color=color,
                                      fillcolor=color, graph_type=type)  # fillcolor='#2FC8E4'
             st.plotly_chart(fig2)
         elif sport in ['huapinyy', 'swolf']:
-            st.markdown('#### 方案二 Zepp（' + str(zepp_case)[1:-1] + '）')
+            st.markdown('#### 方案二（' + str(zepp_case)[1:-1] + '）')
             fig2 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], zepp_case, limtype=3, line_color=color,
                                      fillcolor=color, graph_type=type)  # fillcolor='#2FC8E4'
             st.plotly_chart(fig2)
-            st.markdown('#### 方案三 Zepp + 改进（' + str(zepp_case_upgrade)[1:-1] + '）')
+            st.markdown('#### 方案二 + 改进（' + str(zepp_case_upgrade)[1:-1] + '）')
             fig3 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], zepp_case_upgrade, limtype=3, line_color=color,
                                      fillcolor=color, graph_type=type)  # fillcolor='#2FC8E4'
             st.plotly_chart(fig3)
         elif sport in ['bupin']:
-            st.markdown('#### 方案二 Zepp（' + str(zepp_case)[1:-1] + '）')
+            st.markdown('#### 方案二（' + str(zepp_case)[1:-1] + '）')
             fig2 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], zepp_case, limtype=1, line_color=color,
                                      fillcolor=color, graph_type=type)  # fillcolor='#2FC8E4'
             st.plotly_chart(fig2)
             upg = start_with_zero_upgrade(max_val)
-            st.markdown('#### 方案三 一改进（' + str(zepp_case)[1:-1] + '）')
+            st.markdown('#### 方案一改进（' + str(zepp_case)[1:-1] + '）')
             fig3 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], upg, limtype=3, line_color=color,
                                      fillcolor=color, graph_type=type)  # fillcolor='#2FC8E4'
             st.plotly_chart(fig3)
@@ -866,7 +866,7 @@ def zepp_pace_swim(max_value, min_value):
     # A = max_value
     # B = min_value
     # if A - B <= 90 and A < 150:
-    st.warning('Zepp 方案说明不明确')
+    # st.warning('Zepp 方案说明不明确')
     pass
 
 
@@ -924,13 +924,13 @@ def for_speed_graph_1(type=1, color='#FF0000', yy=False):
         st.plotly_chart(fig3)
 
         try:
-            st.markdown('#### 方案四 Zepp（' + str(zepp_case)[1:-1] + '）')
+            st.markdown('#### 方案四（' + str(zepp_case)[1:-1] + '）')
             # draw_plot_speed(demo_value_x, demo_value_y, result_list_3, type=type, color='#2AC288')
             fig4 = draw_plotly_graph(demo_value_x[0], demo_value_y[0], zepp_case, limtype=1, line_color='#2AC288',
                                      fillcolor='#2AC288', graph_type=type, speed_type=1)  # fillcolor='#2FC8E4'
             st.plotly_chart(fig4)
         except Exception as e:
-            st.error('Zepp 方案说明待确认')
+            st.error('方案说明待确认')
 
 
 st.set_page_config(page_title='图表绘制模拟')
