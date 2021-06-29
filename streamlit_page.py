@@ -153,18 +153,18 @@ def start_with_zero(value_max):
     # print('计算过程如下: ')
     # print('----------------------------------')
     x = value_max / 4
-    # print('1. x 值 为：{}'.format(x))
+    print('1. x 值 为：{}'.format(x))
     x = ceil(x)
     while x % 4 != 0:
         x = x + 1
-    # print('2. 向上以4取整结果为：{}'.format(x))
+    print('2. 向上以4取整结果为：{}'.format(x))
     axis_max = value_max
 
     n = 0
     while axis_max % x != 0:
         n = n + 1
         axis_max = axis_max + 1
-    # print('3. 坐标轴最大值为：{} + {} = {}'.format(value_max, n, axis_max))
+    print('3. 坐标轴最大值为：{} + {} = {}'.format(value_max, n, axis_max))
     range_value = axis_max / 4
     for i in range(3, -1, -1):
         result.append(axis_max - i * range_value)
@@ -276,6 +276,7 @@ def speed_graph2(value_max, value_min):
 
     if axis_min != 0:
         axis_each = float(axis_range / 3)
+
         while floor(axis_each) % 30 != 0:
             axis_each = floor(axis_each) + 1
         for i in range(4):
@@ -287,6 +288,8 @@ def speed_graph2(value_max, value_min):
             result.append(res_str)
     else:
         axis_each = axis_range / 4
+        while floor(axis_each) % 30 != 0:
+            axis_each = floor(axis_each) + 1
         print(axis_each)
         for i in range(5):
             secs = axis_min + i * axis_each
@@ -295,6 +298,8 @@ def speed_graph2(value_max, value_min):
             sec_res = int(secs % 60)
             res_str = '{}:{}'.format(min_res, sec_res)
             result.append(res_str)
+    print(result_num)
+    print(result)
     return result_num, result
 
 
@@ -420,6 +425,7 @@ def draw_plot_1(value_x, value_y, y_ticks):
             plt.fill([0, 10, 10, 0], [value_y[i][0], value_y[i][0], 0, 0], color='#E35A5A')
         plt.plot(value_x[i], value_y[i], linewidth=2, color='#E35A5A')   # 折线
     st.pyplot(plt)
+
 
 # 起点一定为0
 def draw_plot_2(value_x, value_y, y_ticks, type=1, color='#61CE86'):
@@ -881,7 +887,8 @@ def for_speed_graph_1(type=1, color='#FF0000', yy=False):
         zepp_case = zepp_pace_noswim(max_value, min_value)
     else:
         # zepp_case = zepp_pace_swim(max_value, min_value)
-        st.error('Zepp 方案说明待确认，结果暂不予展示')
+        # st.error('Zepp 方案说明待确认，结果暂不予展示')
+        pass
     # str_val = '##### 方案一坐标轴计算结果：' + str(result_list)
     # st.markdown(str_val)
     with st.spinner('生成数据...'):
@@ -960,6 +967,7 @@ if selection == '心率':
         value_selection = st.slider('数值范围', min_value=0, max_value=220, value=(int(random_value[0]), int(random_value[1])))
     else:
         value_selection = st.slider('数值范围', min_value=0, max_value=220, value=(60, 140))
+    st.info('已选定方案二')
     heart_rate_graph()
 elif selection == '海拔':
     st.markdown(f'### 2. 选取数据范围')
