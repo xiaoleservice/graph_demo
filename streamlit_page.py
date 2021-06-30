@@ -978,6 +978,7 @@ elif selection == '海拔':
                                     value=(int(random_value[0]), int(random_value[1])))
     else:
         value_selection = st.slider('数值范围', min_value=-100, max_value=300, value=(281, 300))
+    st.info('已选定方案一')
     latitude_graph()
 elif selection == '速度':
     st.markdown(f'### 2. 选取数据范围')
@@ -988,6 +989,7 @@ elif selection == '速度':
                                     value=(int(random_value[0]), int(random_value[1])))
     else:
         value_selection = st.slider('数值范围', min_value=0, max_value=200, value=(12, 24))
+    st.info('已选定方案一')
     start_by_zero_graph(sport='sudu')
 elif selection == '阻力':
     st.markdown(f'### 2. 选取数据范围')
@@ -998,6 +1000,7 @@ elif selection == '阻力':
                                     value=(int(random_value[0]), int(random_value[1])))
     else:
         value_selection = st.slider('数值范围', min_value=0, max_value=60, value=(12, 24))
+    st.info('已选定方案一')
     start_by_zero_graph(type=3, sport='zuli')
 elif selection == '步频':
     st.markdown(f'### 2. 选取数据范围')
@@ -1008,6 +1011,7 @@ elif selection == '步频':
                                     value=(int(random_value[0]), int(random_value[1])))
     else:
         value_selection = st.slider('数值范围', min_value=0, max_value=300, value=(45, 135))
+    st.info('已选定方案三（方案一改进）')
     start_by_zero_graph(2, sport='bupin')
 elif selection == '配速（非游泳）' or selection == '配速（游泳）':
     st.markdown(f'### 2. 选取数据范围')
@@ -1016,8 +1020,10 @@ elif selection == '配速（非游泳）' or selection == '配速（游泳）':
     speed_high = col2.text_input('输入最慢配速：', '8:10')
     if st.button('计算并绘制'):
         if selection == '配速（非游泳）':
+            st.info('已选定方案二')
             for_speed_graph_1(1)
         else:
+            st.info('已选定方案二')
             for_speed_graph_1(3, yy=True)
 elif selection == '划频（游泳）':
     st.markdown(f'### 2. 选取数据范围')
@@ -1028,6 +1034,7 @@ elif selection == '划频（游泳）':
                                     value=(int(random_value[0]), int(random_value[1])))
     else:
         value_selection = st.slider('数值范围', min_value=0, max_value=300, value=(2, 17))
+    st.info('已选定方案三（方案二+改进）')
     start_by_zero_graph(3, '#1CC3DF', sport='huapinyy')
 elif selection == 'Swolf（游泳）':
     st.markdown(f'### 2. 选取数据范围')
@@ -1038,6 +1045,7 @@ elif selection == 'Swolf（游泳）':
                                     value=(int(random_value[0]), int(random_value[1])))
     else:
         value_selection = st.slider('数值范围', min_value=0, max_value=300, value=(2, 17))
+    st.info('已选定方案三（方案二+改进）')
     start_by_zero_graph(3, '#5188E0', sport='swolf')
 elif selection == '起跳高度':
     st.markdown(f'### 2. 选取数据范围')
@@ -1048,6 +1056,7 @@ elif selection == '起跳高度':
                                     value=(int(random_value[0]), int(random_value[1])))
     else:
         value_selection = st.slider('数值范围', min_value=0, max_value=80, value=(10, 30))
+    st.info('已选定方案一')
     start_by_zero_graph(2, '#FF0000', sport='qitiaogaodu')
 elif selection == '频率（划船机）' or selection == '踏频（室内单车）' or selection == '频率（跳绳）':
     st.markdown(f'### 2. 选取数据范围')
@@ -1058,6 +1067,7 @@ elif selection == '频率（划船机）' or selection == '踏频（室内单车
                                     value=(int(random_value[0]), int(random_value[1])))
     else:
         value_selection = st.slider('数值范围', min_value=0, max_value=300, value=(10, 50))
+    st.info('已选定方案一')
     if selection == '频率（划船机）' or selection == '踏频（室内单车）':
         start_by_zero_graph(2, '#2BBD5C', sport='pinlv_hcj_dc')
     else:
