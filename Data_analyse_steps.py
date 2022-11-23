@@ -15,7 +15,7 @@ def get_origin_data(url):
     return df
 
 
-st.set_page_config(page_title='小米运动健康反馈数据分析 - 计步专项')
+st.set_page_config(page_title='小米运动健康反馈数据分析 - 计步专项', layout='wide')
 
 # st.header('小米穿戴反馈数据分析')
 st.markdown('# 小米运动健康反馈数据分析 - 计步专项')
@@ -190,7 +190,7 @@ if file:
             # st.plotly_chart(fig5)
 
             st.markdown('### 筛选后数据')
-            st.dataframe(df[mask2][['反馈时间', '具体问题', '反馈内容', 'deviceName', 'App版本', '反馈平台']])
+            st.dataframe(df[mask2][['反馈时间', '问题分类 - 二级', '反馈内容', 'deviceName', 'App版本', '反馈平台']])
             # st.markdown('### 回访数据')
             print(df[mask2]['反馈内容'].str.split(';'))
             # df[mask2]['联系方式'] = df[mask2]['反馈内容'].str.split(';')[-1]
