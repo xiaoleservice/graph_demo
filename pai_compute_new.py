@@ -54,9 +54,18 @@ def f_lmh(low, medium, high, prev_pai):  # 七日低、七日中、七日高、�
     final_score = high + low/12 + medium/2
     y = 127.23722*(1-np.exp(-final_score/104.64574))  # 七日累计元气值
     y_today = y - prev_pai
-    low_score = (low/12/final_score) * y_today
-    medium_score = (medium/2/final_score) * y_today
-    high_score = (high/final_score) * y_today
+    try:
+        low_score = (low/12/final_score) * y_today
+    except Exception as e:
+        low_score = 0
+    try:
+        medium_score = (medium/2/final_score) * y_today
+    except Exception as e:
+        medium_score = 0
+    try:
+        high_score = (high/final_score) * y_today
+    except Exception as e:
+        high_score = 0
     y = np.floor(y)
     y_today = np.floor(y_today)
     medium_score = np.floor(medium_score)
@@ -66,11 +75,20 @@ def f_lmh(low, medium, high, prev_pai):  # 七日低、七日中、七日高、�
 
 def f1_lmh(low, medium, high, prev_pai):  # 取整：中、高向下取整，低 = 总 - （中_整 + 高_整）
     final_score = high + low/12 + medium/2
-    y = 120 / (1 + 9 * math.exp(-0.03*final_score))
+    y = 126.282901842748 - 126.282901842748 * math.exp(-0.010002338008324 * final_score)
     y_today = y - prev_pai
-    low_score = (low / 12 / final_score) * y_today
-    medium_score = (medium / 2 / final_score) * y_today
-    high_score = (high / final_score) * y_today
+    try:
+        low_score = (low / 12 / final_score) * y_today
+    except Exception as e:
+        low_score = 0
+    try:
+        medium_score = (medium / 2 / final_score) * y_today
+    except:
+        medium_score = 0
+    try:
+        high_score = (high / final_score) * y_today
+    except:
+        high_score = 0
     y = np.floor(y)
     y_today = np.floor(y_today)
     medium_score = np.floor(medium_score)
